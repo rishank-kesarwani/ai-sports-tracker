@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: sports_mongodb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: sports-tracker
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - sports-network
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: sports_redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    networks:
+      - sports-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sports_backend
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    environment:
+      PORT: 4000
+      NODE_ENV: production
+      MONGODB_URI: mongodb://mongodb:27017/sports-tracker
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      FRONTEND_URL: http://localhost:3000
+      JWT_ACCESS_SECRET: sports_tracker_super_secret_access_jwt_key_2026
+      JWT_REFRESH_SECRET: sports_tracker_super_secret_refresh_jwt_key_2026
+      SPORTS_DB_API_KEY: 3
+      AI_PLATFORM_URL: http://ai-platform:4001
+      AI_PLATFORM_API_KEY: ai-platform-dev-token-2026
+      NOTIFICATION_SERVICE_URL: http://notification-service:4002
+      NOTIFICATION_SERVICE_API_KEY: notification-service-dev-token-2026
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - sports-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sports_frontend
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000/api/v1
+    depends_on:
+      - backend
+    networks:
+      - sports-network
+
+volumes:
+  mongo-data:
+  redis-data:
+
+networks:
+  sports-network:
+    driver: bridge
