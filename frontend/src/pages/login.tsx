@@ -6,6 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import { ErrorBanner } from '../components/common/ErrorBanner';
 import { Trophy, ArrowRight, Lock, Mail, Loader2 } from 'lucide-react';
 
+import { Logo } from '../components/common/Logo';
+
 export default function LoginPage() {
   const router = useRouter();
   const { login, user } = useAuth();
@@ -40,17 +42,13 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      // First try login, if fails try register then login
       try {
         await login('fan@sports.io', 'DemoSports2026!');
       } catch (loginErr) {
-        // Register demo user
-        const { register } = await import('../context/AuthContext').then((m) => ({ register: login }));
-        // Try login again
+        // demo fallback
       }
       router.push('/');
     } catch (err: any) {
-      // If user doesn't exist, provide quick tip
       setError(new Error('Use the form to create a free account or sign in with your email.'));
     } finally {
       setLoading(false);
@@ -64,9 +62,9 @@ export default function LoginPage() {
     >
       <div className="max-w-md mx-auto my-10">
         <div className="relative overflow-hidden rounded-3xl glass-panel border border-slate-800 p-8 shadow-2xl">
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 mb-3 border border-cyan-500/30">
-              <Trophy className="w-6 h-6" />
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="mb-3">
+              <Logo size="lg" link={false} showText={false} />
             </div>
             <h1 className="text-2xl font-black text-white">Welcome Back</h1>
             <p className="text-xs text-gray-400 mt-1">Sign in to your personalized sports tracker</p>

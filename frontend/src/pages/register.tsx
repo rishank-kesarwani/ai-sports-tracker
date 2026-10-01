@@ -6,6 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import { ErrorBanner } from '../components/common/ErrorBanner';
 import { Trophy, ArrowRight, Lock, Mail, User, Loader2 } from 'lucide-react';
 
+import { Logo } from '../components/common/Logo';
+
 export default function RegisterPage() {
   const router = useRouter();
   const { register, user } = useAuth();
@@ -42,9 +44,9 @@ export default function RegisterPage() {
     >
       <div className="max-w-md mx-auto my-10">
         <div className="relative overflow-hidden rounded-3xl glass-panel border border-slate-800 p-8 shadow-2xl">
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 mb-3 border border-cyan-500/30">
-              <Trophy className="w-6 h-6" />
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="mb-3">
+              <Logo size="lg" link={false} showText={false} />
             </div>
             <h1 className="text-2xl font-black text-white">Join AI Sports Tracker</h1>
             <p className="text-xs text-gray-400 mt-1">Free access to real-time telemetry and AI analytics</p>

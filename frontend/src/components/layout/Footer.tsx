@@ -1,15 +1,14 @@
 import React from 'react';
-import Link from 'next/link';
-import { Trophy, Github, Shield, Cpu, ExternalLink } from 'lucide-react';
+import { Github, Shield, Cpu } from 'lucide-react';
+import { Logo } from '../common/Logo';
 
 export const Footer: React.FC = () => {
   return (
     <footer className="w-full border-t border-[#1e293b] bg-[#090d16] py-8 text-xs text-gray-400">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center space-x-2">
-          <Trophy className="w-4 h-4 text-cyan-400" />
-          <span className="font-bold text-white">AI Sports Tracker</span>
-          <span className="text-gray-400">&mdash; Part of AI Engineering Portfolio</span>
+        <div className="flex items-center space-x-3">
+          <Logo size="sm" />
+          <span className="text-gray-500">&mdash; Part of AI Engineering Portfolio</span>
         </div>
 
         <div className="flex flex-wrap items-center gap-4 text-xs">

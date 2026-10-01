@@ -12,6 +12,8 @@ import {
   Radio,
 } from 'lucide-react';
 
+import { Logo } from '../common/Logo';
+
 export const Navbar: React.FC<{ sseStatus?: string }> = ({ sseStatus = 'connected' }) => {
   const router = useRouter();
   const { user, logout, openLoginModal } = useAuth();
@@ -30,18 +32,7 @@ export const Navbar: React.FC<{ sseStatus?: string }> = ({ sseStatus = 'connecte
       <div className="flex items-center justify-between h-16 px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex items-center space-x-3">
-          <Link href="/" className="flex items-center space-x-2.5 group">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 p-0.5 shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
-              <div className="flex items-center justify-center w-full h-full rounded-[10px] bg-[#090d16]">
-                <Trophy className="w-5 h-5 text-cyan-400 group-hover:rotate-12 transition-transform" />
-              </div>
-            </div>
-            <div>
-              <span className="text-lg font-black tracking-tight text-white">
-                AI SPORTS <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">TRACKER</span>
-              </span>
-            </div>
-          </Link>
+          <Logo size="md" />
 
           {/* SSE Live Status Indicator */}
           <div className="hidden md:flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900 border border-slate-800 space-x-1.5 ml-3">

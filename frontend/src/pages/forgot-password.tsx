@@ -5,6 +5,8 @@ import { api } from '../services/api';
 import { ErrorBanner } from '../components/common/ErrorBanner';
 import { Mail, ArrowLeft, Check, Loader2 } from 'lucide-react';
 
+import { Logo } from '../components/common/Logo';
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -33,7 +35,10 @@ export default function ForgotPasswordPage() {
     <AppLayout title="Forgot Password | AI Sports Tracker">
       <div className="max-w-md mx-auto my-12">
         <div className="rounded-3xl glass-panel border border-slate-800 p-8 shadow-2xl">
-          <div className="text-center mb-6">
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="mb-3">
+              <Logo size="lg" link={false} showText={false} />
+            </div>
             <h1 className="text-2xl font-black text-white">Reset Password</h1>
             <p className="text-xs text-gray-400 mt-1">
               Enter your email and we will dispatch password recovery instructions.
