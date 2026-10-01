@@ -7,6 +7,7 @@ import { AiPlatformClient } from '../ai-platform/ai-platform.client';
 import { NotificationServiceClient } from '../notifications/notification-service.client';
 import { TheSportsDbProvider } from '../sports/providers/thesportsdb.provider';
 import { RealtimeService } from '../realtime/realtime.service';
+import { Public } from '../../common/decorators/public.decorator';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Health & Observability')
@@ -22,6 +23,7 @@ export class HealthController {
   ) {}
 
   @Get()
+  @Public()
   @ApiOperation({ summary: 'Liveness & Readiness probe with multi-service dependency health' })
   async checkHealth(@Res() res: Response) {
     const mongoReadyState = this.mongoConnection.readyState;

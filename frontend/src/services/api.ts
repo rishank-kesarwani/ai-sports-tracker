@@ -10,13 +10,15 @@ export const api = axios.create({
   },
 });
 
-// Request interceptor to attach access token if stored in memory/localStorage
+// Request interceptor to attach access token if and only if a valid token exists
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('sports_access_token');
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+      if (token && token.trim() && token !== 'undefined' && token !== 'null' && config.headers) {
+        config.headers.Authorization = `Bearer ${token.trim()}`;
+      } else if (config.headers && config.headers.Authorization) {
+        delete config.headers.Authorization;
       }
     }
     return config;
@@ -24,7 +26,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Response interceptor to handle token refresh and normalized errors
+// Response interceptor to handle token refresh and normalized errors without hard redirects
 api.interceptors.response.use(
   (response) => {
     // Backend standard envelope is { success, statusCode, data, meta, timestamp }
@@ -37,11 +39,11 @@ api.interceptors.response.use(
     const originalRequest: any = error.config;
 
     // Handle 401 Unauthorized (Token Expiration & Refresh)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest?._retry) {
       originalRequest._retry = true;
       try {
         const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('sports_refresh_token') : null;
-        if (refreshToken) {
+        if (refreshToken && refreshToken.trim() && refreshToken !== 'undefined' && refreshToken !== 'null') {
           const res = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken }, { withCredentials: true });
           const newTokens = res.data?.data?.tokens || res.data?.tokens;
           if (newTokens?.accessToken) {
@@ -49,6 +51,7 @@ api.interceptors.response.use(
             if (newTokens.refreshToken) {
               localStorage.setItem('sports_refresh_token', newTokens.refreshToken);
             }
+            originalRequest.headers = originalRequest.headers || {};
             originalRequest.headers.Authorization = `Bearer ${newTokens.accessToken}`;
             return api(originalRequest);
           }

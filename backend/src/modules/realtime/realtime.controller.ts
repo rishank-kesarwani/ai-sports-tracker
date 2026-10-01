@@ -2,6 +2,7 @@ import { Controller, Get, Query, Req, Res, Sse } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Observable } from 'rxjs';
 import { RealtimeService } from './realtime.service';
+import { OptionalAuth } from '../../common/decorators/optional-auth.decorator';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Realtime / Live Updates')
@@ -10,6 +11,7 @@ export class RealtimeController {
   constructor(private readonly realtimeService: RealtimeService) {}
 
   @Sse('matches')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Stream near-real-time match updates via Server-Sent Events (SSE)' })
   @ApiQuery({ name: 'sport', required: false })
   @ApiQuery({ name: 'leagueId', required: false })
@@ -31,6 +33,7 @@ export class RealtimeController {
   }
 
   @Get('stats')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Get active SSE stream statistics' })
   getStreamStats() {
     return {

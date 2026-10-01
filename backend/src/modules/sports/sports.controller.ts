@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { SportsService } from './sports.service';
+import { OptionalAuth } from '../../common/decorators/optional-auth.decorator';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Sports')
@@ -8,12 +9,14 @@ export class SportsController {
   constructor(private readonly sportsService: SportsService) {}
 
   @Get()
+  @OptionalAuth()
   @ApiOperation({ summary: 'Get list of supported sports and current coverage' })
   getSports() {
     return this.sportsService.getAvailableSports();
   }
 
   @Get('leagues')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Get leagues by sport or all' })
   @ApiQuery({ name: 'sport', required: false })
   getLeagues(@Query('sport') sport?: string) {
@@ -21,12 +24,14 @@ export class SportsController {
   }
 
   @Get('leagues/:id')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Get league details and standings' })
   getLeagueById(@Param('id') id: string) {
     return this.sportsService.getLeagueById(id);
   }
 
   @Get('teams')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Search teams by keyword or sport' })
   @ApiQuery({ name: 'q', required: false })
   @ApiQuery({ name: 'sport', required: false })
@@ -35,12 +40,14 @@ export class SportsController {
   }
 
   @Get('teams/:id')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Get team details and squad' })
   getTeamById(@Param('id') id: string) {
     return this.sportsService.getTeamById(id);
   }
 
   @Get('players')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Search players by keyword' })
   @ApiQuery({ name: 'q', required: false })
   searchPlayers(@Query('q') q?: string) {
@@ -48,12 +55,14 @@ export class SportsController {
   }
 
   @Get('players/:id')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Get player profile and statistics' })
   getPlayerById(@Param('id') id: string) {
     return this.sportsService.getPlayerById(id);
   }
 
   @Get('matches')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Query matches by sport, league, status, or date' })
   @ApiQuery({ name: 'sport', required: false })
   @ApiQuery({ name: 'leagueId', required: false })
@@ -77,6 +86,7 @@ export class SportsController {
   }
 
   @Get('matches/upcoming')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Get upcoming scheduled matches' })
   @ApiQuery({ name: 'sport', required: false })
   @ApiQuery({ name: 'limit', required: false })
@@ -85,6 +95,7 @@ export class SportsController {
   }
 
   @Get('matches/recent')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Get recent finished matches' })
   @ApiQuery({ name: 'sport', required: false })
   @ApiQuery({ name: 'limit', required: false })
@@ -93,6 +104,7 @@ export class SportsController {
   }
 
   @Get('matches/live')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Get current live or near-real-time matches' })
   @ApiQuery({ name: 'sport', required: false })
   getLiveMatches(@Query('sport') sport?: string) {
@@ -100,6 +112,7 @@ export class SportsController {
   }
 
   @Get('matches/:id')
+  @OptionalAuth()
   @ApiOperation({ summary: 'Get match center details, minute events, and AI summary' })
   getMatchById(@Param('id') id: string) {
     return this.sportsService.getMatchById(id);
