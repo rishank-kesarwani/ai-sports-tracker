@@ -64,12 +64,30 @@ api.interceptors.response.use(
       }
     }
 
-    const message = error.response?.data?.message || error.message || 'An unexpected error occurred';
-    const status = error.response?.status || 500;
-    const customError = new Error(typeof message === 'object' ? JSON.stringify(message) : message);
+    const status = error.response?.status;
+    let message = error.response?.data?.message;
+
+    if (!message) {
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        message = 'Request timed out. Please try again.';
+      } else if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+        message = 'Request was cancelled.';
+      } else if (!error.response && error.request) {
+        message = 'Unable to reach the server. Please check your network connection.';
+      } else {
+        message = error.message || 'An unexpected error occurred';
+      }
+    }
+
+    const formattedMessage = typeof message === 'object' ? JSON.stringify(message) : message;
+    const customError = new Error(formattedMessage);
     (customError as any).status = status;
+    (customError as any).code = error.code;
+    (customError as any).name = error.name;
     (customError as any).details = error.response?.data?.details;
     (customError as any).correlationId = error.response?.data?.correlationId;
+    (customError as any).response = error.response;
+    (customError as any).isAxiosError = true;
 
     return Promise.reject(customError);
   },

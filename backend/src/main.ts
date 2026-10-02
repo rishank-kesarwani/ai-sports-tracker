@@ -13,8 +13,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('port', 4000);
-  const frontendUrl = configService.get<string>('frontendUrl', 'http://localhost:3000');
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : configService.get<number>('port', 4000);
+  const frontendUrlRaw = configService.get<string>('frontendUrl', 'http://localhost:3000');
+  const configuredOrigins = frontendUrlRaw
+    .split(',')
+    .map((url) => url.trim())
+    .filter(Boolean);
 
   // Security Headers
   app.use(
@@ -30,19 +34,28 @@ async function bootstrap() {
   // CORS
   app.enableCors({
     origin: [
-      frontendUrl,
+      ...configuredOrigins,
       'http://localhost:3000',
       'http://127.0.0.1:3000',
       /\.vercel\.app$/,
+      /\.onrender\.com$/,
       /\.railway\.app$/,
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-correlation-id', 'Idempotency-Key'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-api-key',
+      'x-correlation-id',
+      'Idempotency-Key',
+    ],
   });
 
-  // Global Prefix
-  app.setGlobalPrefix('api/v1');
+  // Global Prefix with Health Route Exclusion (for Render Health Checks at /health)
+  app.setGlobalPrefix('api/v1', {
+    exclude: ['health', 'api/health'],
+  });
 
   // Global Validation
   app.useGlobalPipes(
@@ -84,9 +97,9 @@ async function bootstrap() {
 
   app.enableShutdownHooks();
 
-  await app.listen(port);
-  logger.log(`🚀 AI Sports Tracker Backend is live at: http://localhost:${port}/api/v1`);
-  logger.log(`📚 Swagger OpenAPI Documentation available at: http://localhost:${port}/api/docs`);
+  await app.listen(port, '0.0.0.0');
+  logger.log(`🚀 AI Sports Tracker Backend is live at: http://0.0.0.0:${port}/api/v1`);
+  logger.log(`📚 Swagger OpenAPI Documentation available at: http://0.0.0.0:${port}/api/docs`);
 }
 
 bootstrap().catch((err) => {
