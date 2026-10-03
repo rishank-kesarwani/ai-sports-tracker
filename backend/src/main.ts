@@ -3,7 +3,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
-import cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
@@ -28,8 +28,11 @@ async function bootstrap() {
     }),
   );
 
-  // Cookie Parser
-  app.use(cookieParser());
+  // Cookie Parser (resilient for both CommonJS and ES Module interop)
+  const cookieMiddleware = typeof cookieParser === 'function' ? cookieParser : (cookieParser as any)?.default;
+  if (typeof cookieMiddleware === 'function') {
+    app.use(cookieMiddleware());
+  }
 
   // CORS
   app.enableCors({
