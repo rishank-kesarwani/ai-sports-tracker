@@ -15,8 +15,10 @@ import { FollowsModule } from './modules/follows/follows.module';
 import { IngestionModule } from './modules/ingestion/ingestion.module';
 import { HealthModule } from './modules/health/health.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { AppController } from './app.controller';
 
 @Module({
+  controllers: [AppController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,

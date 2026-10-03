@@ -55,6 +55,19 @@ async function bootstrap() {
     ],
   });
 
+  // Seamless routing: Support incoming requests both with and without the /api/v1 prefix
+  app.use((req: any, _res: any, next: any) => {
+    if (
+      req.url &&
+      !req.url.startsWith('/api/v1') &&
+      !req.url.startsWith('/api/docs') &&
+      !req.url.startsWith('/health')
+    ) {
+      req.url = `/api/v1${req.url.startsWith('/') ? '' : '/'}${req.url}`;
+    }
+    next();
+  });
+
   // Global Prefix with Health Route Exclusion (for Render Health Checks at /health)
   app.setGlobalPrefix('api/v1', {
     exclude: ['health', 'api/health'],

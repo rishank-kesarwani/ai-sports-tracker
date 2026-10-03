@@ -1,5 +1,5 @@
-import { Controller, Get, Query, Req, Res, Sse } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Controller, Get, Query, Req, Sse } from '@nestjs/common';
+import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { RealtimeService } from './realtime.service';
 import { OptionalAuth } from '../../common/decorators/optional-auth.decorator';
@@ -19,13 +19,16 @@ export class RealtimeController {
     @Query('sport') sport?: string,
     @Query('leagueId') leagueId?: string,
     @Req() req?: Request,
-    @Res() res?: Response,
   ): Observable<MessageEvent> {
     this.realtimeService.registerClient();
 
     if (req) {
+      let closed = false;
       req.on('close', () => {
-        this.realtimeService.unregisterClient();
+        if (!closed) {
+          closed = true;
+          this.realtimeService.unregisterClient();
+        }
       });
     }
 
